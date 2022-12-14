@@ -1,7 +1,10 @@
 package com.cognixia.jump.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,6 +12,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 
 @Entity
@@ -41,6 +45,9 @@ public class User implements Serializable{
 	
 	@Column(nullable = false)
 	private String email;
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private Collection<UserCar> userCar = new ArrayList<>();
 	
 	public User() {
 		
@@ -103,6 +110,14 @@ public class User implements Serializable{
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public Collection<UserCar> getUserCar() {
+		return userCar;
+	}
+
+	public void setUserCar(Collection<UserCar> userCar) {
+		this.userCar = userCar;
 	}
 
 	@Override
