@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,11 +33,13 @@ public class UserController {
 	@Autowired
 	PasswordEncoder encoder;
 	
+	@CrossOrigin
 	@GetMapping("/user")
 	public List<User> getAllUsers() {
 		return repo.findAll();
 	}
 	
+	@CrossOrigin
 	@GetMapping("/user/{id}")
 	public ResponseEntity<?> getUserById(@PathVariable int id) {
 		
@@ -48,6 +52,7 @@ public class UserController {
 		return ResponseEntity.status(200).body(found.get());
 	}
 	
+	@CrossOrigin
 	@PostMapping("/user")
 	public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
 		
@@ -62,5 +67,59 @@ public class UserController {
 		return ResponseEntity.status(201).body(created);
 		
 	}
+	
+	@CrossOrigin
+	@PutMapping("/user")
+	public ResponseEntity<?> updateUser(@Valid @RequestBody User updatedUser) {
+		
+		Optional<User> found = repo.findById(updatedUser.getId());
+		
+		if (found.isEmpty()) {
+			return ResponseEntity.status(404).body("Car with id = " + updatedUser + " not found");
+		}
+		else {
+			updatedUser.setPassword(encoder.encode(updatedUser.getPassword()));
+			return ResponseEntity.status(202).body(repo.save(updatedUser));
+		}
+	}
+	
+	@CrossOrigin
+	@DeleteMapping("/user/{id}")
+	public ResponseEntity<?> deleteUser(@PathVariable int id) {
+		Optional<User> found = repo.findById(id);
+		
+		if (found.isEmpty()) {
+			return ResponseEntity.status(404).body("Car with id = " + id + " not found");
+		}
+		else {
+			repo.deleteById(id);
+			return ResponseEntity.status(202).body("Car deleted");
+		}
+	}
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
