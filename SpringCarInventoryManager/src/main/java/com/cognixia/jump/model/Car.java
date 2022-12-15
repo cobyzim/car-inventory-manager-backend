@@ -1,12 +1,16 @@
 package com.cognixia.jump.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 
 @Entity
@@ -36,6 +40,9 @@ public class Car implements Serializable {
 	
 	@Column(columnDefinition = "boolean default true")
 	private boolean visibility;
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private Collection<UserCar> userCar = new ArrayList<>();
 	
 	public Car() {
 		
@@ -98,6 +105,14 @@ public class Car implements Serializable {
 
 	public void setVisibility(boolean visibility) {
 		this.visibility = visibility;
+	}
+
+	public Collection<UserCar> getUserCar() {
+		return userCar;
+	}
+
+	public void setUserCar(Collection<UserCar> userCar) {
+		this.userCar = userCar;
 	}
 
 	@Override
