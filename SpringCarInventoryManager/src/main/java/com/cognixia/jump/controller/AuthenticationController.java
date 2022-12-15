@@ -29,7 +29,8 @@ public class AuthenticationController {
 	JwtUtil jwtUtil;
 	
 	// create token at http://localhost:8080/authenticate
-	// send the username & password to try and generate a token as a response
+	// send the username & password to try and generate a token as a response,
+	// username and password must already exist in DB
 	@PostMapping("/authenticate")
 	public ResponseEntity<?> createJwtToken(@RequestBody AuthenticationRequest request) throws Exception {
 		

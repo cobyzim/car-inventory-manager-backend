@@ -13,12 +13,18 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.cognixia.jump.filter.JwtRequestFilter;
 
 @Configuration  //indicates class has @Bean definition methods
 public class SecurityConfig {
 	
 	@Autowired
 	UserDetailsService userDetailsService;  // Spring will look for an implementation of userDetailsService and find ours
+	
+	@Autowired
+	JwtRequestFilter jwtRequestFilter;
 	
 	@Bean
 	protected UserDetailsService userDetailsService() { 
@@ -27,6 +33,8 @@ public class SecurityConfig {
 	}
 	
 	// Handles authorization
+	// SecurityFilterChain makes sure that we go through the filters first before we get to anything else
+	//      It needs to make sure that JwtRequestFilter gets checked first though
 	@Bean
 	protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		
@@ -37,6 +45,12 @@ public class SecurityConfig {
 				.anyRequest().authenticated()
 				.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		
+		// Typically the first filter that is checked is the UsernamePasswordAuthenticationFilter, however if this filter is
+		// checked first, there is no username or password to check, so security will block the request
+		// so we make sure the jwt filter is checked first, so we can load the jwt in and load the user before any other filter
+		// is checked
+		http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 		
 		return http.build();
 	}
