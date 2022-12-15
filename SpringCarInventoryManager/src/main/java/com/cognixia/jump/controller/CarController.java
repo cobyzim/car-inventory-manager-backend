@@ -50,7 +50,7 @@ public class CarController {
 		}
 	}
 	
-		@CrossOrigin
+	@CrossOrigin
 	@PostMapping("/cars/add")
 	public ResponseEntity<?> addCar(@RequestBody Car newCar){
 		newCar.setId(-1);

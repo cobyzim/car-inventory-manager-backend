@@ -30,7 +30,7 @@ public class Car implements Serializable {
 	@Column(nullable = false)  // model can't be null
 	private String model;
 	
-	@NotBlank
+	//@NotBlank
 	@Column(nullable = false, columnDefinition = "int default 0")
 	private Integer year;
 	
@@ -48,7 +48,7 @@ public class Car implements Serializable {
 		
 	}
 
-	public Car(Integer id, @NotBlank String make, @NotBlank String model, @NotBlank Integer year,
+	public Car(Integer id, @NotBlank String make, @NotBlank String model, /*@NotBlank */ Integer year,
 			@NotBlank String color, boolean visibility) {
 		super();
 		this.id = id;
