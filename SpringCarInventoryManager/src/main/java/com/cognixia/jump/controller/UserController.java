@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cognixia.jump.exception.ResourceNotFoundException;
 import com.cognixia.jump.model.User;
 import com.cognixia.jump.model.UserCar;
 import com.cognixia.jump.model.UserCarKey;
@@ -49,12 +50,12 @@ public class UserController {
 	
 	@CrossOrigin
 	@GetMapping("/user/{id}")
-	public ResponseEntity<?> getUserById(@PathVariable int id) {
+	public ResponseEntity<?> getUserById(@PathVariable int id) throws ResourceNotFoundException {
 		
 		Optional<User> found = repo.findById(id);
 		
 		if (found.isEmpty()) {
-			return ResponseEntity.status(404).body("User with id = " + id + " not found");
+			throw new ResourceNotFoundException("User with id = " + id + " not found.");
 		}
 		
 		return ResponseEntity.status(200).body(found.get());
@@ -78,12 +79,12 @@ public class UserController {
 	
 	@CrossOrigin
 	@PutMapping("/user")
-	public ResponseEntity<?> updateUser(@Valid @RequestBody User updatedUser) {
+	public ResponseEntity<?> updateUser(@Valid @RequestBody User updatedUser) throws ResourceNotFoundException {
 		
 		Optional<User> found = repo.findById(updatedUser.getId());
 		
 		if (found.isEmpty()) {
-			return ResponseEntity.status(404).body("Car with id = " + updatedUser + " not found");
+			throw new ResourceNotFoundException("User with id = " + updatedUser.getId() + " not found and can't be updated.");
 		}
 		else {
 			Collection<UserCar> userCarList = found.get().getUserCar();
@@ -109,11 +110,11 @@ public class UserController {
 	
 	@CrossOrigin
 	@DeleteMapping("/user/{id}")
-	public ResponseEntity<?> deleteUser(@PathVariable int id) {
+	public ResponseEntity<?> deleteUser(@PathVariable int id) throws ResourceNotFoundException {
 		Optional<User> found = repo.findById(id);
 		
 		if (found.isEmpty()) {
-			return ResponseEntity.status(404).body("Car with id = " + id + " not found");
+			throw new ResourceNotFoundException("User with id = " + id + " not found. Couldn't be deleted.");
 		}
 		else {
 			if (found.isPresent()) {
