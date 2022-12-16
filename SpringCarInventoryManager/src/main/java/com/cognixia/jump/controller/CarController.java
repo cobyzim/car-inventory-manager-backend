@@ -1,7 +1,9 @@
 package com.cognixia.jump.controller;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +18,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cognixia.jump.model.Car;
+import com.cognixia.jump.model.UserCar;
+import com.cognixia.jump.model.UserCarKey;
 import com.cognixia.jump.repository.CarRepository;
+import com.cognixia.jump.service.UserCarService;
 
 @CrossOrigin
 @RequestMapping("/api")
@@ -25,6 +30,9 @@ public class CarController {
 
 	@Autowired
 	CarRepository repo;
+	
+	@Autowired
+	UserCarService service;
 	
 	@CrossOrigin
 	@GetMapping("/cars")
@@ -63,6 +71,23 @@ public class CarController {
 		Optional<Car> found = repo.findById(updatedCar.getId());
 		
 		if (found.isPresent()) {
+			Collection<UserCar> userCarList = found.get().getUserCar();
+			for (UserCar uc: updatedCar.getUserCar()) {
+				if (!userCarList.contains(uc)) {
+					service.modifyUserCar(uc);
+				}
+			}
+			List<UserCarKey> oldCarKeyList = userCarList.stream().map(uc -> uc.getId())
+								.collect(Collectors.toList());
+			List<UserCarKey> newCarKeyList = updatedCar.getUserCar().stream().map(uc -> uc.getId())
+					.collect(Collectors.toList());
+			
+			for (UserCarKey k : oldCarKeyList) {
+				if (!newCarKeyList.contains(k)) {
+					service.deleteUserCar(k);
+				}
+			}
+			
 			return ResponseEntity.status(202).body(repo.save(updatedCar));
 		} else {
 			return ResponseEntity.status(404).body("Car with id = " + updatedCar.getId() + " not found.");
@@ -75,6 +100,10 @@ public class CarController {
 		Optional<Car> found = repo.findById(id);
 		
 		if (found.isPresent()) {
+			Collection<UserCar> userCarList = found.get().getUserCar();
+			for (UserCar e: userCarList) {
+				service.deleteUserCar(e.getId());
+			}
 			repo.deleteById(id);
 			return ResponseEntity.status(202).body("Car deleted.");
 		} else {

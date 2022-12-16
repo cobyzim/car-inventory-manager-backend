@@ -1,7 +1,9 @@
 package com.cognixia.jump.controller;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -19,7 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cognixia.jump.model.User;
+import com.cognixia.jump.model.UserCar;
+import com.cognixia.jump.model.UserCarKey;
 import com.cognixia.jump.repository.UserRepository;
+import com.cognixia.jump.service.UserCarService;
 
 
 @RestController
@@ -28,6 +33,9 @@ public class UserController {
 	
 	@Autowired
 	UserRepository repo;
+	
+	@Autowired
+	UserCarService service;
 	
 	// load in encoder for the project (located in security config)
 	@Autowired
@@ -78,6 +86,22 @@ public class UserController {
 			return ResponseEntity.status(404).body("Car with id = " + updatedUser + " not found");
 		}
 		else {
+			Collection<UserCar> userCarList = found.get().getUserCar();
+			for (UserCar uc: updatedUser.getUserCar()) {
+				if (!userCarList.contains(uc)) {
+					service.modifyUserCar(uc);
+				}
+			}
+			List<UserCarKey> oldCarKeyList = userCarList.stream().map(uc -> uc.getId())
+								.collect(Collectors.toList());
+			List<UserCarKey> newCarKeyList = updatedUser.getUserCar().stream().map(uc -> uc.getId())
+					.collect(Collectors.toList());
+			
+			for (UserCarKey k : oldCarKeyList) {
+				if (!newCarKeyList.contains(k)) {
+					service.deleteUserCar(k);
+				}
+			}
 			updatedUser.setPassword(encoder.encode(updatedUser.getPassword()));
 			return ResponseEntity.status(202).body(repo.save(updatedUser));
 		}
@@ -92,6 +116,12 @@ public class UserController {
 			return ResponseEntity.status(404).body("Car with id = " + id + " not found");
 		}
 		else {
+			if (found.isPresent()) {
+				Collection<UserCar> userCarList = found.get().getUserCar();
+				for (UserCar e: userCarList) {
+					service.deleteUserCar(e.getId());
+				}
+			}
 			repo.deleteById(id);
 			return ResponseEntity.status(202).body("Car deleted");
 		}

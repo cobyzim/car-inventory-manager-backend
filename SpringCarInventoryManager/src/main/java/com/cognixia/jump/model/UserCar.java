@@ -1,5 +1,7 @@
 package com.cognixia.jump.model;
 
+import java.util.Objects;
+
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -72,6 +74,23 @@ public class UserCar {
 
 	public void setTestDrive(boolean isTestDrive) {
 		this.isTestDrive = isTestDrive;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(car, isTestDrive, user);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UserCar other = (UserCar) obj;
+		return Objects.equals(car, other.car) && isTestDrive == other.isTestDrive && Objects.equals(user, other.user);
 	}
 	
 }

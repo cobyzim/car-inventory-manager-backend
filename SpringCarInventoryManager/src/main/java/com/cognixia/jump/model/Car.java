@@ -3,6 +3,7 @@ package com.cognixia.jump.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -119,6 +120,25 @@ public class Car implements Serializable {
 	public String toString() {
 		return "Car [id=" + id + ", make=" + make + ", model=" + model + ", year=" + year + ", color=" + color
 				+ ", visibility=" + visibility + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(color, id, make, model, userCar, visibility, year);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Car other = (Car) obj;
+		return Objects.equals(color, other.color) && Objects.equals(id, other.id) && Objects.equals(make, other.make)
+				&& Objects.equals(model, other.model) && Objects.equals(userCar, other.userCar)
+				&& visibility == other.visibility && Objects.equals(year, other.year);
 	}
 	
 	
