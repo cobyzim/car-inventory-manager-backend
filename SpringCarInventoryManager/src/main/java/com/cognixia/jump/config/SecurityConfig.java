@@ -42,6 +42,15 @@ public class SecurityConfig {
 				.authorizeHttpRequests()
 				.antMatchers("/authenticate").permitAll()
 				.antMatchers(HttpMethod.POST, "/api/user").permitAll()
+				.antMatchers(HttpMethod.GET, "/api/user").hasRole("ADMIN")  //GOOD
+				.antMatchers("/api/user/{id}").hasRole("ADMIN") //GOOD FOR GET AND POST
+				.antMatchers(HttpMethod.PUT, "/api/user").hasRole("ADMIN") //GOOD
+				.antMatchers("/api/cars").hasRole("ADMIN")
+				.antMatchers("/api/cars/add").hasRole("ADMIN")
+				.antMatchers("/api/cars/update").hasRole("ADMIN")
+				.antMatchers("/api/cars/delete/{id}").hasRole("ADMIN")
+				.antMatchers("/api/cars/available").hasAnyRole("ADMIN", "CUSTOMER")
+				.antMatchers("/api/cars/{id}").hasAnyRole("ADMIN", "CUSTOMER")
 				.anyRequest().authenticated()
 				.and()
 				.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
