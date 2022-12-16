@@ -87,10 +87,11 @@ public class UserController {
 			throw new ResourceNotFoundException("User with id = " + updatedUser.getId() + " not found and can't be updated.");
 		}
 		else {
+			//Check what UserCar changed and add, update, or delete
 			Collection<UserCar> userCarList = found.get().getUserCar();
 			for (UserCar uc: updatedUser.getUserCar()) {
 				if (!userCarList.contains(uc)) {
-					service.modifyUserCar(uc);
+					service.modifyUserCar(uc); // add or update
 				}
 			}
 			List<UserCarKey> oldCarKeyList = userCarList.stream().map(uc -> uc.getId())
@@ -100,7 +101,7 @@ public class UserController {
 			
 			for (UserCarKey k : oldCarKeyList) {
 				if (!newCarKeyList.contains(k)) {
-					service.deleteUserCar(k);
+					service.deleteUserCar(k); // delete
 				}
 			}
 			updatedUser.setPassword(encoder.encode(updatedUser.getPassword()));
@@ -118,6 +119,8 @@ public class UserController {
 		}
 		else {
 			if (found.isPresent()) {
+				
+				// deletes all UserCar links
 				Collection<UserCar> userCarList = found.get().getUserCar();
 				for (UserCar e: userCarList) {
 					service.deleteUserCar(e.getId());
