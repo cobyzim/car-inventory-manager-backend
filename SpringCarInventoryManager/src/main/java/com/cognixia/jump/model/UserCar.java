@@ -6,22 +6,26 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 // Entity class to model the join table
 // Without this, won't be able to add the is_test_drive property
 @Entity
 public class UserCar {
 
 	@EmbeddedId
-	private UserCarKey id;
+	private UserCarKey id = new UserCarKey();
 	
 	@ManyToOne
 	@MapsId("userId")  // MapsId -> ties field to part of composite key. Can't have actual entity in composite key
 	@JoinColumn(name = "user_id")
+	@JsonIgnoreProperties("userCar")
 	private User user;
 	
 	@ManyToOne
 	@MapsId("carId")
 	@JoinColumn(name = "car_id")
+	@JsonIgnoreProperties("userCar")
 	private Car car;
 	
 	private boolean isTestDrive;

@@ -41,7 +41,7 @@ public class Car implements Serializable {
 	@Column(columnDefinition = "boolean default true")
 	private boolean visibility;
 	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
 	private Collection<UserCar> userCar = new ArrayList<>();
 	
 	public Car() {
